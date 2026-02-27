@@ -1,0 +1,32 @@
+{
+  "name": "mdtodoc",
+  "version": "0.4.1",
+  "private": true,
+  "scripts": {
+    "generate-sw": "bun scripts/generate-sw.ts",
+    "predev": "bun run generate-sw",
+    "dev": "next dev",
+    "prebuild": "bun run generate-sw",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@instantdb/react": "^0.22.147",
+    "marked": "^15.0.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "shiki": "^4.0.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
