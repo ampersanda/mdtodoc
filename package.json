@@ -12,8 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@instantdb/react": "^0.22.147",
-    "marked": "^15.0.0",
+"marked": "^15.0.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

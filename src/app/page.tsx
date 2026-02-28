@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { IoRefreshOutline } from "react-icons/io5";
 import { useStyleConfig } from "@/hooks/useStyleConfig";
 import { useSaveStatus } from "@/hooks/useSaveStatus";
-import db from "@/lib/instant";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import StyledPreview from "@/components/StyledPreview";
 import CopyButton from "@/components/CopyButton";
 import ExportPdfButton from "@/components/ExportPdfButton";
-import ShareButton from "@/components/ShareButton";
 import StylePanel from "@/components/StylePanel";
 
 const SAMPLE_MARKDOWN = `# Welcome to mdtodoc
@@ -75,35 +72,18 @@ export default function Home() {
   const { status: saveStatus, trigger: triggerSave } = useSaveStatus();
   const { styles, updateStyle, resetStyles } = useStyleConfig(triggerSave);
   const initialLoadRef = useRef(true);
-  const searchParams = useSearchParams();
-  const shareId = searchParams.get("id");
-
-  const { data: shareData, isLoading: shareLoading } = db.useQuery(
-    shareId ? { documents: { $: { where: { id: shareId } } } } : null
-  );
 
   useEffect(() => {
-    if (shareData?.documents?.[0]) {
-      setMarkdown(shareData.documents[0].markdown);
-      initialLoadRef.current = false;
-    }
-  }, [shareData]);
-
-  useEffect(() => {
-    if (shareId) return;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) setMarkdown(saved);
     initialLoadRef.current = false;
-  }, [shareId]);
+  }, []);
 
   useEffect(() => {
     if (initialLoadRef.current) return;
     localStorage.setItem(STORAGE_KEY, markdown);
-    if (shareId) {
-      db.transact(db.tx.documents[shareId].update({ markdown }));
-    }
     triggerSave();
-  }, [markdown, shareId, triggerSave]);
+  }, [markdown, triggerSave]);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -130,7 +110,7 @@ export default function Home() {
           </h1>
           {saveStatus !== "idle" && (
             <span className="text-xs text-gray-400">
-              {saveStatus === "saving" ? "Saving..." : "Saved"}
+              {saveStatus === "saving" ? "Saving to local..." : "Saved"}
             </span>
           )}
         </div>
@@ -153,7 +133,6 @@ export default function Home() {
             Reset to example
           </button>
           <ExportPdfButton markdown={markdown} styles={styles} />
-          <ShareButton markdown={markdown} />
           <CopyButton markdown={markdown} styles={styles} />
         </div>
       </header>
@@ -163,31 +142,6 @@ export default function Home() {
           className="relative w-1/2 border-r border-gray-200"
           aria-label="Markdown editor"
         >
-          {shareLoading && (
-            <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5 rounded-md bg-gray-800/80 px-3 py-1.5 text-xs text-gray-200 shadow-sm backdrop-blur-sm">
-              <svg
-                className="size-3.5 animate-spin"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Loading shared document...
-            </div>
-          )}
           <MarkdownEditor value={markdown} onChange={setMarkdown} />
         </section>
 
